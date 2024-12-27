@@ -1,7 +1,7 @@
-import gradle.kotlin.dsl.accessors._5110d0ad46c3465a3034c0fe268105a5.kotlin
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 plugins {
     id("org.jlleitschuh.gradle.ktlint")
@@ -31,7 +31,7 @@ kotlinPlugins.forEach { kotlinPluginId ->
             if ("jvm" in kotlinPluginId) {
                 val sourcesJar by tasks.registering(Jar::class) {
                     archiveClassifier = "sources"
-                    from(kotlin.sourceSets.getByName("main").kotlin)
+                    from(project.the<KotlinJvmExtension>().sourceSets.getByName("main").kotlin)
                     destinationDirectory = layout.buildDirectory.dir("artifacts")
                 }
                 publishing {
