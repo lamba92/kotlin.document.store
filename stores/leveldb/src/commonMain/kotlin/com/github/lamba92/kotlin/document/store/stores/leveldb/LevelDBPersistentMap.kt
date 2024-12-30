@@ -8,9 +8,9 @@ import com.github.lamba92.leveldb.batch
 import com.github.lamba92.leveldb.resolve
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -77,19 +77,15 @@ public class LevelDBPersistentMap(
 
     override suspend fun isEmpty(): Boolean = size() == 0L
 
-    override fun entries(): Flow<Map.Entry<String, String>> =
-        flow {
-            val sequence = delegate.scan("$prefix.")
-            try {
-                sequence.map { it.resolve() }
-                    .takeWhile { (key, _) -> key.startsWith("$prefix.") }
-                    .forEach { emit(SerializableEntry(it.key.removePrefix("$prefix."), it.value)) }
-            } finally {
-                withContext(NonCancellable) {
-                    sequence.close()
-                }
-            }
-        }
+    override fun entries(): Flow<Map.Entry<String, String>> {
+        val sequence = delegate.scan("$prefix.")
+        return sequence
+            .map { it.resolve() }
+            .takeWhile { (key, _) -> key.startsWith("$prefix.") }
+            .map { SerializableEntry(it.key.removePrefix("$prefix."), it.value) }
+            .asFlow()
+            .onCompletion { sequence.close() }
+    }
 
     override suspend fun getOrPut(
         key: String,
