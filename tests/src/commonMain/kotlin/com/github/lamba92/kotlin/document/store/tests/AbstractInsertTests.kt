@@ -25,6 +25,7 @@ public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(s
         public const val TEST_NAME_1: String = "inserts_and_retrieves_a_document_without_index"
         public const val TEST_NAME_2: String = "inserts_and_retrieves_a_document_with_index"
         public const val TEST_NAME_3: String = "inserts_and_retrieves_a_document_using_complex_index"
+        public const val TEST_NAME_4: String = "count_is_correct_after_insertion"
     }
 
     @Test
@@ -101,6 +102,45 @@ public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(s
                         .getValue(collection.json.encodeToJsonElement(expected.addresses[0])),
                 actual = setOf(expected.id),
                 message = "Index should be the one of Mario",
+            )
+        }
+
+    @Test
+    public fun countIsCorrectAfterInsertion(): TestResult =
+        runDatabaseTest(TEST_NAME_4) { db ->
+            val collection = db.getObjectCollection<TestUser>("test")
+            repeat(100) { index ->
+                collection.insert(TestUser.Mario)
+                assertEquals(
+                    expected = index + 1L,
+                    actual = collection.size(),
+                )
+            }
+            assertEquals(
+                expected = 100L,
+                actual = collection.iterateAll().countLong(),
+            )
+
+            collection.clear()
+            assertEquals(
+                expected = 0L,
+                actual = collection.size(),
+            )
+            assertEquals(
+                expected = 0L,
+                actual = collection.iterateAll().countLong(),
+            )
+
+            repeat(100) { index ->
+                collection.insert(TestUser.Mario)
+                assertEquals(
+                    expected = index + 1L,
+                    actual = collection.size(),
+                )
+            }
+            assertEquals(
+                expected = 100L,
+                actual = collection.iterateAll().countLong(),
             )
         }
 }

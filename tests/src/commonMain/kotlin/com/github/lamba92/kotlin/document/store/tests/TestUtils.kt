@@ -1,5 +1,6 @@
 package com.github.lamba92.kotlin.document.store.tests
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -50,3 +51,9 @@ public data class Address(
     val street: String,
     val number: Int,
 )
+
+internal suspend fun <T> Flow<T>.countLong(): Long {
+    var i = 0L
+    collect { ++i }
+    return i
+}
