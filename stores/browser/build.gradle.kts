@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     `publishing-convention`
     `kotlin-multiplatform-convention`
@@ -14,7 +18,7 @@ kotlin {
             }
         }
     }
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
     wasmJs {
         browser {
             testTask {
