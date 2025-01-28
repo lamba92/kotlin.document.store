@@ -1,6 +1,5 @@
 package externalTypes
 
-
 public external interface IDBRequest {
     public var oncomplete: (() -> Unit)?
     public var onsuccess: (() -> Unit)?
@@ -47,6 +46,7 @@ public external interface IDBCursorWithValue {
     @JsName("continue")
     public fun next()
 }
+
 public external class DOMException(
     message: String = definedExternally,
     name: String = definedExternally,
@@ -54,7 +54,6 @@ public external class DOMException(
     public val name: String
     public val message: String
     public val code: Short
-
 
     public companion object {
         public val INDEX_SIZE_ERR: Short

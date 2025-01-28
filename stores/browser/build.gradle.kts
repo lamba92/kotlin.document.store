@@ -15,7 +15,7 @@ kotlin {
         }
     }
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-    wasmJs  {
+    wasmJs {
         browser {
             testTask {
                 useKarma {
@@ -35,11 +35,9 @@ kotlin {
         }
         jsMain {
             dependsOn(webMain)
-
         }
         wasmJsMain {
             dependsOn(webMain)
-
         }
         jsTest {
             dependencies {

@@ -105,14 +105,13 @@ public class IndexedDBMap(
             get(key) ?: defaultValue().also { unsafePut(key, it) }
         }
 
-
     override fun entries(): Flow<Map.Entry<String, String>> =
         flow {
             keys()
                 .await<JsArray<JsString>>()
                 .toList()
                 .asFlow()
-                .filter {  it.toString().startsWith(prefixed) }
+                .filter { it.toString().startsWith(prefixed) }
                 .collect { key ->
                     keyval.get(key.toString()).await<JsString?>()?.let { value ->
                         emit(SerializableEntry(key.toString().removePrefix(prefixed), value.toString()))

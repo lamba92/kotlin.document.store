@@ -6,7 +6,6 @@ package keyval
 import externalTypes.IDBObjectStore
 import kotlin.js.Promise
 
-
 public external interface UseStore {
     public operator fun invoke(
         txMode: String,
