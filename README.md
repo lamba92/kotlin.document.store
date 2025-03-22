@@ -99,7 +99,7 @@ dependencies {
 class MyActivity : CompactActivity() {
     
     override fun onCreate(): String {
-        val store = context.getLevelDBStore()
+        val store = context.openLevelDBStore()
         val db = KotlinDocumentStore(store)
         // your stuff...
     }
