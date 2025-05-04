@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     `publishing-convention`
     `kotlin-multiplatform-convention`
@@ -14,14 +18,27 @@ kotlin {
             }
         }
     }
-    sourceSets {
-        jsMain {
-            dependencies {
-                api(npm("idb-keyval", "6.2.1"))
-                api(projects.core)
+
+    wasmJs {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
             }
         }
-        jsTest {
+    }
+
+    sourceSets {
+
+        commonMain {
+            dependencies {
+                api(projects.core)
+                api(npm("idb-keyval", "6.2.1"))
+            }
+        }
+
+        commonTest {
             dependencies {
                 implementation(projects.tests)
             }
