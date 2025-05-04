@@ -3,11 +3,10 @@ package com.github.lamba92.kotlin.document.store.stores.browser
 import com.github.lamba92.kotlin.document.store.core.PersistentMap
 import com.github.lamba92.kotlin.document.store.core.SerializableEntry
 import com.github.lamba92.kotlin.document.store.core.UpdateResult
-import keyval.del
-import keyval.delMany
-import keyval.keys
-import keyval.set
-import kotlinx.coroutines.await
+import keyval.async.del
+import keyval.async.delMany
+import keyval.async.keys
+import keyval.async.set
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
@@ -45,20 +44,18 @@ public class IndexedDBMap(
 
     override suspend fun clear(): Unit =
         keys()
-            .await()
             .filter { it.startsWith(prefixed) }
-            .let { delMany(it.toTypedArray()).await() }
+            .let { delMany(it) }
 
     override suspend fun size(): Long =
         keys()
-            .await()
             .filter { it.startsWith(prefixed) }
             .size
             .toLong()
 
     override suspend fun isEmpty(): Boolean = size() == 0L
 
-    override suspend fun get(key: String): String? = keyval.get(key.prefixed()).await()
+    override suspend fun get(key: String): String? = keyval.async.get(key.prefixed())
 
     override suspend fun put(
         key: String,
@@ -70,14 +67,14 @@ public class IndexedDBMap(
         value: String,
     ): String? {
         val previous = get(key)
-        set(key.prefixed(), value).await()
+        set(key.prefixed(), value)
         return previous
     }
 
     override suspend fun remove(key: String): String? =
         mutex.withLock {
             val previous = get(key)
-            del(key.prefixed()).await()
+            del(key.prefixed())
             previous
         }
 
@@ -91,7 +88,7 @@ public class IndexedDBMap(
         mutex.withLock {
             val oldValue = get(key)
             val newValue = oldValue?.let(updater) ?: value
-            set(key.prefixed(), newValue).await()
+            set(key.prefixed(), newValue)
             UpdateResult(oldValue, newValue)
         }
 
@@ -106,11 +103,10 @@ public class IndexedDBMap(
     override fun entries(): Flow<Map.Entry<String, String>> =
         flow {
             keys()
-                .await()
                 .asFlow()
                 .filter { it.startsWith(prefixed) }
                 .collect { key ->
-                    keyval.get(key).await()?.let { value ->
+                    keyval.async.get(key)?.let { value ->
                         emit(SerializableEntry(key.removePrefix(prefixed), value))
                     }
                 }

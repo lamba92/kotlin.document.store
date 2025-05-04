@@ -12,7 +12,6 @@ import com.github.lamba92.kotlin.document.store.tests.AbstractInsertTests
 import com.github.lamba92.kotlin.document.store.tests.AbstractObjectCollectionTests
 import com.github.lamba92.kotlin.document.store.tests.AbstractUpdateTests
 import com.github.lamba92.kotlin.document.store.tests.DataStoreProvider
-import kotlinx.coroutines.await
 
 class BrowserDeleteTests : AbstractDeleteTests(BrowserStoreProvider)
 
@@ -30,7 +29,7 @@ class BrowserObjectCollectionTests : AbstractObjectCollectionTests(BrowserStoreP
 
 object BrowserStoreProvider : DataStoreProvider {
     override suspend fun deleteDatabase(testName: String) {
-        keyval.clear().await()
+        keyval.async.clear()
     }
 
     override fun provide(testName: String): DataStore = BrowserStore
