@@ -2,7 +2,7 @@
 androidx-test-core = "1.6.1"
 android-test-junit = "1.2.1"
 nexus-publish-plugin = "2.0.0"
-android-gradle-plugin = "8.10.1"
+android-gradle-plugin = "8.11.0"
 dokka = "2.0.0"
 h2 = "2.3.232"
 kotlin = "2.1.20"
