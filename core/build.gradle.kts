@@ -6,19 +6,16 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-android {
-    namespace = "com.github.lamba92.kotlin.document.store.core"
-}
-
 kotlin {
+    android {
+        namespace = "com.github.lamba92.kotlin.document.store.core"
+    }
+
     jvm()
-    androidTarget()
     js {
         browser()
     }
     mingwX64()
-
-    androidTarget()
 
     linuxX64()
     linuxArm64()

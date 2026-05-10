@@ -4,13 +4,12 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-android {
-    namespace = "com.github.lamba92.kotlin.document.store.stores.leveldb"
-}
-
 kotlin {
+    android {
+        namespace = "com.github.lamba92.kotlin.document.store.stores.leveldb"
+    }
+
     jvm()
-    androidTarget()
 
     mingwX64()
 
