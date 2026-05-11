@@ -43,19 +43,18 @@ Whether you're building desktop, web, or backend applications, `kotlin.document.
 
 # Supported Platforms
 There are three main implementations of the `DataStore` interface:
-- **LevelDB**: For all Kotlin platforms (excluding JS and Wasm), using [kotlin-leveldb](https://github.com/lamba92/kotlin-leveldb) key-value store.
+- **RocksDB**: For all Kotlin platforms (excluding JS and Wasm), using [rocksdb-multiplatform](https://github.com/marykdb/rocksdb-multiplatform) key-value store.
   - JVM:
-    - Windows: arm64, x64
+    - Windows: x64
     - Linux: arm64, x64
     - macOs: arm64, x64
-  - JS
-  - Native (Linux, macOS, Windows, iOS, Android, Android native, watchOS, tvOS)
+  - Native (Linux, macOS, Windows, iOS [arm64 + simulator-arm64], Android, Android native, watchOS, tvOS)
 - **Browser**: For browser-based applications, using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) storage.
   - JS
 - **MVStore**: For JVM-based applications, using the [H2 Database Engine](https://www.h2database.com/html/main.html) MVStore. Recommended only for IntelliJ Plugin development.
   - JVM
 
-google/leveldb is licensed under [BSD-3-Clause license](https://github.com/google/leveldb/blob/main/LICENSE), all rights reserved to the original authors.
+facebook/rocksdb is licensed under the [Apache 2.0 / GPLv2 dual license](https://github.com/facebook/rocksdb/blob/main/LICENSE.Apache), all rights reserved to the original authors.
 
 The modules `core` and `test` are common to all platforms and contain the main interfaces and tests for the library and they support also `wasmWasi`.
 
@@ -69,7 +68,7 @@ Import the library to your project, see the latest version in the [Releases](htt
 #### Gradle Setup
 ```kotlin
 dependencies {
-    implementation("com.github.lamba92:kotlin-document-store-leveldb:{latest_version}")
+    implementation("com.github.lamba92:kotlin-document-store-rocksdb:{latest_version}")
 }
 ```
 #### Using Version Catalog
@@ -89,7 +88,7 @@ dependencyResolutionManagement {
 
 // build.gradle.kts
 dependencies {
-  implementation(kotlinDocumentStore.leveldb)
+  implementation(kotlinDocumentStore.rocksdb)
 }
 ```
 
@@ -99,7 +98,7 @@ dependencies {
 class MyActivity : CompactActivity() {
     
     override fun onCreate(): String {
-        val store = context.openLevelDBStore()
+        val store = context.openRocksDBStore()
         val db = KotlinDocumentStore(store)
         // your stuff...
     }
@@ -111,7 +110,7 @@ class MyActivity : CompactActivity() {
 
 ```kotlin
 fun main() {
-    val store = LevelDBStore.open("path/to/db")
+    val store = RocksDBStore.open("path/to/db")
     val db = KotlinDocumentStore(store)
     // your stuff...
 }
@@ -362,5 +361,5 @@ kotlin {
 ## Available Test Implementations
 Classes of tests are provided and only the implementation of `DataStore` is needed to run them. See test implementation for:
 - [MVDataStore](stores/mvstore/src/test/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/mvstore/MVStoreTests.kt)
-- [LevelDBStore](stores/leveldb/src/commonTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/leveldb/LeveldbTests.kt)
+- [RocksDBStore](stores/rocksdb/src/commonTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/rocksdb/RocksdbTests.kt)
 - [BrowserStore](stores/browser/src/jsTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/browser/BrowserTests.kt)

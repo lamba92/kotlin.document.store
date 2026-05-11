@@ -18,7 +18,7 @@ plugins {
 
 kotlin {
     sourceSets.silenceOptIns()
-    jvmToolchain(8)
+    jvmToolchain(11)
     explicitApi()
 }
 

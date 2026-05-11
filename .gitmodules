@@ -1,3 +1,0 @@
-[submodule "kotlin-leveldb"]
-	path = kotlin-leveldb
-	url = https://github.com/lamba92/kotlin-leveldb.git

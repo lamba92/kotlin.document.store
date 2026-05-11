@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     android {
-        compileSdk = 35
+        compileSdk = 36
         minSdk = 21
     }
 }

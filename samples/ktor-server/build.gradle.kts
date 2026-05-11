@@ -14,7 +14,7 @@ application {
 
 dependencies {
     implementation(projects.samples)
-    implementation(projects.stores.leveldb)
+    implementation(projects.stores.rocksdb)
     implementation(libs.ktor.server.cio)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)

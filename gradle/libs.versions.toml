@@ -14,7 +14,7 @@ kotlinx-serialization-json = "1.11.0"
 ktlint-gradle = "14.2.0"
 ktor = "3.4.2"
 logback = "1.5.32"
-kotlin-leveldb = "1.0.2"
+rocksdb-multiplatform = "10.10.1"
 androidx-test-runner = "1.6.2"
 
 [libraries]
@@ -42,7 +42,7 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-kotlin-leveldb = { module = "com.github.lamba92:kotlin-leveldb", version.ref = "kotlin-leveldb" }
+rocksdb-multiplatform = { module = "io.maryk.rocksdb:rocksdb-multiplatform", version.ref = "rocksdb-multiplatform" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 
 [plugins]

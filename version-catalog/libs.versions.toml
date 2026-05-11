@@ -6,5 +6,5 @@ kotlin-document-store="%%%VERSION%%%"
 core = { module = "com.github.lamba92:kotlin-document-store-core", version.ref = "kotlin-document-store" }
 mvstore = { module = "com.github.lamba92:kotlin-document-store-mvstore", version.ref = "kotlin-document-store" }
 browser = { module = "com.github.lamba92:kotlin-document-store-browser", version.ref = "kotlin-document-store" }
-leveldb = { module = "com.github.lamba92:kotlin-document-store-leveldb", version.ref = "kotlin-document-store" }
+rocksdb = { module = "com.github.lamba92:kotlin-document-store-rocksdb", version.ref = "kotlin-document-store" }
 tests = { module = "com.github.lamba92:kotlin-document-store-tests", version.ref = "kotlin-document-store" }
