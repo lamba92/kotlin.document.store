@@ -5,7 +5,6 @@ import com.github.lamba92.kotlin.document.store.core.SerializableEntry
 import com.github.lamba92.kotlin.document.store.core.UpdateResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
@@ -88,12 +87,12 @@ public class Index(
 
     override suspend fun update(
         key: JsonElement,
-        default: Set<Long>,
+        value: Set<Long>,
         updater: (Set<Long>) -> Set<Long>,
     ): UpdateResult<Set<Long>> =
         delegate.update(
             key = key.asString(),
-            value = default.join(),
+            value = value.join(),
             updater = { updater(it.split()).join() },
         ).let { UpdateResult(it.oldValue?.split(), it.newValue.split()) }
 }

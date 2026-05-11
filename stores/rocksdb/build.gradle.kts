@@ -17,7 +17,6 @@ kotlin {
     linuxArm64()
 
     macosArm64()
-    macosX64()
 
     iosArm64()
     iosSimulatorArm64()
@@ -100,12 +99,6 @@ kotlin {
             dependsOn(commonTest.get())
         }
 
-        androidInstrumentedTest {
-            dependsOn(commonJvmTest)
-        }
-        androidUnitTest {
-            dependsOn(commonJvmTest)
-        }
         jvmTest {
             dependsOn(commonJvmTest)
         }

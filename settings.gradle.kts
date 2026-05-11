@@ -11,6 +11,22 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     rulesMode = RulesMode.PREFER_SETTINGS
+    versionCatalogs {
+        // Mirror the host monorepo's IJ-sync AGP downgrade (see ../settings.gradle.kts):
+        // the IJ Android plugin lags behind stable AGP, so during IDEA sync (but not
+        // Android Studio sync) the host pins agp = 9.0.0-alpha06. AgpVersionCompatibilityRule
+        // refuses to mix AGP versions across composite builds, so this submodule has to
+        // downgrade in lockstep — otherwise included-build :core / :stores:* fail
+        // androidCompileClasspath resolution at sync time.
+        create("libs") {
+            from(files("gradle/versions.toml"))
+            val isIdeaSync = System.getProperty("idea.sync.active") == "true"
+            val isAndroidStudio = System.getProperty("idea.platform.prefix") == "AndroidStudio"
+            if (isIdeaSync && !isAndroidStudio) {
+                version("android-gradle-plugin", "9.0.0-alpha06")
+            }
+        }
+    }
 }
 
 rootProject.name = "kotlin-document-store"

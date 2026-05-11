@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -243,7 +242,7 @@ public class JsonCollection internal constructor(
                 getIndexOrNull(fieldSelector)
                     ?.update(
                         key = jsonObject.select(fieldSelector) ?: return@forEach,
-                        default = emptySet(),
+                        value = emptySet(),
                         updater = { it - id },
                     )
             }
@@ -288,7 +287,7 @@ public class JsonCollection internal constructor(
                 getIndexOrNull(fieldSelector)
                     ?.update(
                         key = jsonObjectWithId.select(fieldSelector) ?: return@forEach,
-                        default = setOf(id),
+                        value = setOf(id),
                         updater = { it + id },
                     )
             }
