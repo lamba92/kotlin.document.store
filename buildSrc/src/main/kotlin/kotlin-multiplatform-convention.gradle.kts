@@ -2,6 +2,7 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.internal.os.OperatingSystem
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
 import kotlin.io.path.ExperimentalPathApi
@@ -18,7 +19,7 @@ plugins {
 
 kotlin {
     sourceSets.silenceOptIns()
-    jvmToolchain(11)
+    jvmToolchain(8)
     explicitApi()
 }
 
@@ -30,6 +31,9 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.silenceOptIns() = all {
     }
 }
 
+val javaToolchains = extensions.getByType<JavaToolchainService>()
+val testRuntime = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(11) }
+
 tasks {
 
     val testDbPath = layout.buildDirectory.file("test-databases").get().asPath
@@ -40,6 +44,10 @@ tasks {
         doFirst { namedTestDbPath.deleteRecursively() }
         environment("DB_PATH", namedTestDbPath.absolutePathString())
         useJUnitPlatform()
+        // Compilation toolchain stays at 8 so published variants advertise jvm.version=8
+        // (IJ's downgraded AGP-9.0.0-alpha06 sync rejects higher). But tests run on 11+
+        // so they can load rocksdb-multiplatform's class-file v55 JVM artifact.
+        javaLauncher = testRuntime
         systemProperty("jna.debug_load", "true")
         systemProperty("jna.debug_load.jna", "true")
         testLogging {
