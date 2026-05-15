@@ -23,7 +23,7 @@ dependencyResolutionManagement {
             val isIdeaSync = System.getProperty("idea.sync.active") == "true"
             val isAndroidStudio = System.getProperty("idea.platform.prefix") == "AndroidStudio"
             if (isIdeaSync && !isAndroidStudio) {
-                version("android-gradle-plugin", "9.0.0-alpha06")
+                version("android-gradle-plugin", "9.0.0")
             }
         }
     }
