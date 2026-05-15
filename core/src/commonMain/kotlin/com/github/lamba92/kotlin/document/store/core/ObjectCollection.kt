@@ -77,7 +77,6 @@ public class ObjectCollection<T : Any>(
                     is JsonArray -> "an array-like object"
                     is JsonPrimitive -> "a primitive"
                     JsonNull -> "null"
-                    else -> "an unknown type"
                 }
             error("Expected an object but got $s")
         }
