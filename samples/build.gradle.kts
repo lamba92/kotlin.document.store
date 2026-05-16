@@ -10,10 +10,8 @@ kotlin {
         browser()
         nodejs()
     }
-    macosX64()
     macosArm64()
     iosArm64()
-    iosX64()
 
     sourceSets {
         commonMain {
