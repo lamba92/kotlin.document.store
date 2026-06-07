@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalJsExport::class, DelicateCoroutinesApi::class)
+@file:OptIn(ExperimentalJsExport::class, DelicateCoroutinesApi::class, ExperimentalTime::class)
 @file:Suppress("unused")
 
 package com.github.lamba92.kotlin.document.store.samples.ktor.js
@@ -18,13 +18,14 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.js.Promise
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Serializable
 data class CacheEntry<K, V>(
@@ -57,7 +58,10 @@ class UserClient(
     private val cache = KotlinDocumentStore(BrowserStore)
 
     @Serializable
-    data class GetAllUsersRequest(val page: Int, val pageSize: Int)
+    data class GetAllUsersRequest(
+        val page: Int,
+        val pageSize: Int,
+    )
 
 //    fun getAllUsers(request: GetAllUsersRequest): Promise<Page<User>> = GlobalScope.promise {
 //        val collection: ObjectCollection<CacheEntry<GetAllUsersRequest, Page<User>>> =
@@ -83,33 +87,38 @@ class UserClient(
 
     fun getUser(id: Int): Promise<User> =
         GlobalScope.promise {
-            httpClient.get("$protocol://$host:$port/users/$id")
+            httpClient
+                .get("$protocol://$host:$port/users/$id")
                 .body<User>()
         }
 
     fun insertUser(user: User): Promise<User> =
         GlobalScope.promise {
-            httpClient.post("$protocol://$host:$port/users") {
-                setBody(user)
-            }.body<User>()
+            httpClient
+                .post("$protocol://$host:$port/users") {
+                    setBody(user)
+                }.body<User>()
         }
 
     fun updateUser(user: User): Promise<User> =
         GlobalScope.promise {
-            httpClient.put("$protocol://$host:$port/users") {
-                setBody(user)
-            }.body<User>()
+            httpClient
+                .put("$protocol://$host:$port/users") {
+                    setBody(user)
+                }.body<User>()
         }
 
     fun searchUsers(name: String): Promise<List<User>> =
         GlobalScope.promise {
-            httpClient.get("$protocol://$host:$port/users/search?name=$name")
+            httpClient
+                .get("$protocol://$host:$port/users/search?name=$name")
                 .body<List<User>>()
         }
 
     fun loadTestUsers() =
         GlobalScope.promise {
-            httpClient.get("$protocol://$host:$port/insertTestUsers")
+            httpClient
+                .get("$protocol://$host:$port/insertTestUsers")
                 .status.value
         }
 
