@@ -3,9 +3,8 @@ package com.github.lamba92.kotlin.document.store.stores.browser
 import com.github.lamba92.kotlin.document.store.core.AbstractDataStore
 import com.github.lamba92.kotlin.document.store.core.DataStore
 import com.github.lamba92.kotlin.document.store.core.PersistentMap
-import keyval.delMany
-import keyval.keys
-import kotlinx.coroutines.await
+import keyval.async.delMany
+import keyval.async.keys
 
 /**
  * Implementation of the [DataStore] for use in web browsers.
@@ -28,9 +27,8 @@ public object BrowserStore : AbstractDataStore() {
         withStoreLock {
             lockAndRemoveMutex(name) {
                 keys()
-                    .await()
                     .filter { it.startsWith(IndexedDBMap.buildPrefix(name)) }
-                    .let { delMany(it.toTypedArray()).await() }
+                    .let { delMany(it) }
             }
         }
 }

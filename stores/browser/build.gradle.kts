@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_USAGE")
+
 plugins {
     `publishing-convention`
     `kotlin-multiplatform-convention`
@@ -14,16 +16,34 @@ kotlin {
             }
         }
     }
+    wasmJs {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+    }
     sourceSets {
-        jsMain {
+        commonMain {
             dependencies {
-                api(npm("idb-keyval", "6.2.1"))
                 api(projects.core)
             }
         }
-        jsTest {
+        commonTest {
             dependencies {
                 implementation(projects.tests)
+            }
+        }
+        jsMain {
+            dependencies {
+                api(npm("idb-keyval", "6.2.1"))
+            }
+        }
+        wasmJsMain {
+            dependencies {
+                api(npm("idb-keyval", "6.2.1"))
             }
         }
     }

@@ -1,10 +1,10 @@
-# kotlin.document.store
+﻿# kotlin.document.store
 
 Fast NoSql document store for Kotlin Multiplatform, inspired by [Nitrite-java](https://github.com/nitrite/nitrite-java) and [MongoDB](https://github.com/mongodb/mongo).
 
 With support for typed and schemaless data, lets you work with JSON objects easily, leveraging `kotlin.serialization` for fast and simple object serialization/deserialization.
 
-Originally created for [JetBrains/package-search-intellij-plugin](https://github.com/JetBrains/package-search-intellij-plugin) for a fast and reliable offline cache, evolved for all KMP developers 🚀
+Originally created for [JetBrains/package-search-intellij-plugin](https://github.com/JetBrains/package-search-intellij-plugin) for a fast and reliable offline cache, evolved for all KMP developers ðŸš€
 
 Some key highlights:
 - **Multiplatform**: Works on Kotlin/JVM, Kotlin/JS, and ALL Kotlin/Native platforms (excepts wasm).
@@ -362,4 +362,4 @@ kotlin {
 Classes of tests are provided and only the implementation of `DataStore` is needed to run them. See test implementation for:
 - [MVDataStore](stores/mvstore/src/test/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/mvstore/MVStoreTests.kt)
 - [RocksDBStore](stores/rocksdb/src/commonTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/rocksdb/RocksdbTests.kt)
-- [BrowserStore](stores/browser/src/jsTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/browser/BrowserTests.kt)
+- [BrowserStore](stores/browser/src/commonTest/kotlin/com/github/lamba92/kotlin/document/store/tests/stores/browser/BrowserTests.kt)
