@@ -103,35 +103,35 @@ public actual class IdbByteStore internal constructor(
 
     public actual suspend fun get(key: String): ByteArray? {
         val request = store("readonly").get(key)
-        awaitRequest(request)
+        request.await()
         return (request.result as? Int8Array)?.toByteArray()
     }
 
     public actual suspend fun put(
         key: String,
         value: ByteArray,
-    ): Unit = awaitRequest(store("readwrite").put(value.toInt8Array(), key))
+    ): Unit = store("readwrite").put(value.toInt8Array(), key).await()
 
-    public actual suspend fun delete(key: String): Unit = awaitRequest(store("readwrite").delete(key))
+    public actual suspend fun delete(key: String): Unit = store("readwrite").delete(key).await()
 
-    public actual suspend fun clear(): Unit = awaitRequest(store("readwrite").clear())
+    public actual suspend fun clear(): Unit = store("readwrite").clear().await()
 
     public actual suspend fun keys(): List<String> {
         val request = store("readonly").getAllKeys()
-        awaitRequest(request)
+        request.await()
         @Suppress("UNCHECKED_CAST")
         return (request.result as Array<String>).toList()
     }
 
     public actual suspend fun count(): Long {
         val request = store("readonly").count()
-        awaitRequest(request)
+        request.await()
         return (request.result as Int).toLong()
     }
 
     public actual suspend fun size(key: String): Long? {
         val request = store("readonly").get(key)
-        awaitRequest(request)
+        request.await()
         return (request.result as? Int8Array)?.length?.toLong()
     }
 }
@@ -144,39 +144,39 @@ public actual class IdbTextStore internal constructor(
 
     public actual suspend fun get(key: String): String? {
         val request = store("readonly").get(key)
-        awaitRequest(request)
+        request.await()
         return request.result as? String
     }
 
     public actual suspend fun put(
         key: String,
         value: String,
-    ): Unit = awaitRequest(store("readwrite").put(value, key))
+    ): Unit = store("readwrite").put(value, key).await()
 
-    public actual suspend fun delete(key: String): Unit = awaitRequest(store("readwrite").delete(key))
+    public actual suspend fun delete(key: String): Unit = store("readwrite").delete(key).await()
 
-    public actual suspend fun clear(): Unit = awaitRequest(store("readwrite").clear())
+    public actual suspend fun clear(): Unit = store("readwrite").clear().await()
 
     public actual suspend fun keys(): List<String> {
         val request = store("readonly").getAllKeys()
-        awaitRequest(request)
+        request.await()
         @Suppress("UNCHECKED_CAST")
         return (request.result as Array<String>).toList()
     }
 
     public actual suspend fun count(): Long {
         val request = store("readonly").count()
-        awaitRequest(request)
+        request.await()
         return (request.result as Int).toLong()
     }
 
     public actual suspend fun entries(): List<Pair<String, String>> = keys().mapNotNull { key -> get(key)?.let { key to it } }
 }
 
-private suspend fun awaitRequest(request: IDBRequest): Unit =
+private suspend fun IDBRequest.await(): Unit =
     suspendCancellableCoroutine { continuation ->
-        request.onsuccess = { continuation.resume(Unit) }
-        request.onerror = { continuation.resumeWithException(IllegalStateException("IndexedDB request failed")) }
+        onsuccess = { continuation.resume(Unit) }
+        onerror = { continuation.resumeWithException(IllegalStateException("IndexedDB request failed")) }
     }
 
 private fun ByteArray.toInt8Array(): Int8Array {
