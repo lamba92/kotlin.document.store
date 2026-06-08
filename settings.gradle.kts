@@ -31,6 +31,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(
     ":core",
+    ":indexeddb",
     ":samples:js-http-client",
     ":samples:kmp-app",
     ":samples:ktor-server",

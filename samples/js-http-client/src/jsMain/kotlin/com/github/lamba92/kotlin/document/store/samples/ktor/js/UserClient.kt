@@ -55,7 +55,7 @@ class UserClient(
             }
         }
 
-    private val cache = KotlinDocumentStore(BrowserStore)
+    private val cache = KotlinDocumentStore(BrowserStore.DEFAULT)
 
     @Serializable
     data class GetAllUsersRequest(

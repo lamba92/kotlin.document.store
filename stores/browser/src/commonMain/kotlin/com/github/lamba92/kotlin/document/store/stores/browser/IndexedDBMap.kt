@@ -1,12 +1,9 @@
 package com.github.lamba92.kotlin.document.store.stores.browser
 
+import com.github.lamba92.indexeddb.IdbTextStore
 import com.github.lamba92.kotlin.document.store.core.PersistentMap
 import com.github.lamba92.kotlin.document.store.core.SerializableEntry
 import com.github.lamba92.kotlin.document.store.core.UpdateResult
-import keyval.async.del
-import keyval.async.delMany
-import keyval.async.keys
-import keyval.async.set
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
@@ -15,20 +12,17 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
- * A browser-based implementation of the `DataStore` that uses `IndexedDB` for persistent storage.
+ * A browser-based implementation of `PersistentMap` backed by IndexedDB.
  *
- * The `BrowserStore` enables web applications to store and manage named maps persistently
- * in a client-side database (IndexedDB). It supports creating, retrieving, and deleting
- * persistent maps, while ensuring thread safety through synchronization mechanisms.
- *
- * Each persistent map is backed by an `IndexedDBMap`, which provides efficient key-value
- * storage and ensures data durability across browser sessions.
- *
- * This implementation is ideal for client-side scenarios where durable, structured storage
- * is required in the browser environment.
+ * Every named map shares a single IndexedDB object store ([store]); entries are namespaced by
+ * a `<name>.` key prefix so distinct maps coexist without colliding. IndexedDB object stores
+ * can only be created inside a `versionchange` upgrade, so a store-per-map layout would force a
+ * version bump on each new collection — prefixing within one store avoids that at the cost of
+ * prefix-scanning for whole-map operations ([size], [clear], [entries]).
  */
 public class IndexedDBMap(
     private val name: String,
+    private val store: IdbTextStore,
     private val mutex: Mutex,
 ) : PersistentMap<String, String> {
     public companion object {
@@ -43,38 +37,39 @@ public class IndexedDBMap(
     private fun String.prefixed() = "$prefixed$this"
 
     override suspend fun clear(): Unit =
-        keys()
+        store
+            .keys()
             .filter { it.startsWith(prefixed) }
-            .let { delMany(it) }
+            .forEach { store.delete(it) }
 
     override suspend fun size(): Long =
-        keys()
-            .filter { it.startsWith(prefixed) }
-            .size
+        store
+            .keys()
+            .count { it.startsWith(prefixed) }
             .toLong()
 
     override suspend fun isEmpty(): Boolean = size() == 0L
 
-    override suspend fun get(key: String): String? = keyval.async.get(key.prefixed())
+    override suspend fun get(key: String): String? = store.get(key.prefixed())
 
     override suspend fun put(
         key: String,
         value: String,
     ): String? = mutex.withLock { unsafePut(key, value) }
 
-    private suspend fun IndexedDBMap.unsafePut(
+    private suspend fun unsafePut(
         key: String,
         value: String,
     ): String? {
-        val previous = get(key)
-        set(key.prefixed(), value)
+        val previous = store.get(key.prefixed())
+        store.put(key.prefixed(), value)
         return previous
     }
 
     override suspend fun remove(key: String): String? =
         mutex.withLock {
-            val previous = get(key)
-            del(key.prefixed())
+            val previous = store.get(key.prefixed())
+            store.delete(key.prefixed())
             previous
         }
 
@@ -86,9 +81,9 @@ public class IndexedDBMap(
         updater: (String) -> String,
     ): UpdateResult<String> =
         mutex.withLock {
-            val oldValue = get(key)
+            val oldValue = store.get(key.prefixed())
             val newValue = oldValue?.let(updater) ?: value
-            set(key.prefixed(), newValue)
+            store.put(key.prefixed(), newValue)
             UpdateResult(oldValue, newValue)
         }
 
@@ -97,16 +92,17 @@ public class IndexedDBMap(
         defaultValue: () -> String,
     ): String =
         mutex.withLock {
-            get(key) ?: defaultValue().also { unsafePut(key, it) }
+            store.get(key.prefixed()) ?: defaultValue().also { unsafePut(key, it) }
         }
 
     override fun entries(): Flow<Map.Entry<String, String>> =
         flow {
-            keys()
+            store
+                .keys()
                 .asFlow()
                 .filter { it.startsWith(prefixed) }
                 .collect { key ->
-                    keyval.async.get(key)?.let { value ->
+                    store.get(key)?.let { value ->
                         emit(SerializableEntry(key.removePrefix(prefixed), value))
                     }
                 }

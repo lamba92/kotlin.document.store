@@ -29,8 +29,8 @@ class BrowserObjectCollectionTests : AbstractObjectCollectionTests(BrowserStoreP
 
 object BrowserStoreProvider : DataStoreProvider {
     override suspend fun deleteDatabase(testName: String) {
-        keyval.async.clear()
+        BrowserStore.DEFAULT.clearForTests()
     }
 
-    override fun provide(testName: String): DataStore = BrowserStore
+    override fun provide(testName: String): DataStore = BrowserStore.DEFAULT
 }

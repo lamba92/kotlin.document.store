@@ -151,7 +151,7 @@ dependencies {
 #### Anywhere in your code
 
 ```kotlin
-val db = KotlinDocumentStore(BrowserStore)
+val db = KotlinDocumentStore(BrowserStore.DEFAULT)
 ```
 
 ---

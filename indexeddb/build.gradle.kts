@@ -7,6 +7,9 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
     js {
         browser {
             testTask {
@@ -28,13 +31,18 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.core)
-                implementation(projects.indexeddb)
+                api(libs.kotlinx.coroutines.core)
+            }
+        }
+        wasmJsMain {
+            dependencies {
+                implementation(libs.kotlinx.browser)
             }
         }
         commonTest {
             dependencies {
-                implementation(projects.tests)
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
     }

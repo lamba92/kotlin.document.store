@@ -1,10 +1,11 @@
 package com.github.lamba92.kotlin.document.store.stores.browser
 
+import com.github.lamba92.indexeddb.IdbDatabase
+import com.github.lamba92.indexeddb.IdbTextStore
+import com.github.lamba92.indexeddb.openIdb
 import com.github.lamba92.kotlin.document.store.core.AbstractDataStore
 import com.github.lamba92.kotlin.document.store.core.DataStore
 import com.github.lamba92.kotlin.document.store.core.PersistentMap
-import keyval.async.delMany
-import keyval.async.keys
 
 /**
  * Implementation of the [DataStore] for use in web browsers.
@@ -13,22 +14,48 @@ import keyval.async.keys
  * persistent key-value storage in the user's browser. It is designed for use in
  * web applications that require durable storage across browser sessions.
  *
- * This class supports the creation, retrieval, and deletion of named maps, where
- * each map is implemented as an [IndexedDBMap]. Concurrency and synchronization
- * are managed using locks to ensure thread safety during access to individual maps.
- *
- * This implementation extends [AbstractDataStore], inheriting utility methods for
- * managing locks and operations related to the data store.
+ * Each instance is bound to one IndexedDB database ([databaseName]); all of that database's
+ * named maps share a single object store ([STORE]) and are namespaced per map by an
+ * [IndexedDBMap] key prefix. Use [DEFAULT] for the conventional single-database singleton, or
+ * construct one with an explicit name to keep separate document stores isolated in the browser.
  */
-public object BrowserStore : AbstractDataStore() {
-    override suspend fun getMap(name: String): PersistentMap<String, String> = withStoreLock { IndexedDBMap(name, getMutex(name)) }
+public class BrowserStore(
+    private val databaseName: String = DEFAULT_DATABASE_NAME,
+) : AbstractDataStore() {
+    private var database: IdbDatabase? = null
+
+    private suspend fun documents(): IdbTextStore {
+        val db = database ?: openIdb(databaseName, stores = setOf(STORE)).also { database = it }
+        return db.text(STORE)
+    }
+
+    override suspend fun getMap(name: String): PersistentMap<String, String> =
+        withStoreLock { IndexedDBMap(name, documents(), getMutex(name)) }
 
     override suspend fun deleteMap(name: String): Unit =
         withStoreLock {
             lockAndRemoveMutex(name) {
-                keys()
+                val store = documents()
+                store
+                    .keys()
                     .filter { it.startsWith(IndexedDBMap.buildPrefix(name)) }
-                    .let { delMany(it) }
+                    .forEach { store.delete(it) }
             }
         }
+
+    override suspend fun close(): Unit =
+        withStoreLock {
+            database?.close()
+            database = null
+        }
+
+    internal suspend fun clearForTests(): Unit = withStoreLock { documents().clear() }
+
+    public companion object {
+        private const val DEFAULT_DATABASE_NAME = "kotlin-document-store"
+        private const val STORE = "documents"
+
+        /** The conventional single-database `BrowserStore`, equivalent to the former singleton. */
+        public val DEFAULT: BrowserStore = BrowserStore()
+    }
 }
