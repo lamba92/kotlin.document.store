@@ -118,7 +118,19 @@ public actual class IdbByteStore internal constructor(
     public actual suspend fun put(
         key: String,
         value: ByteArray,
-    ): Unit = awaitRequest(store("readwrite").put(value.toInt8Array(), key.toJsString()))
+    ): Unit = put(key, value.toInt8Array())
+
+    /**
+     * wasmJs-only fast path: store an already-built [Int8Array] directly, skipping the
+     * `ByteArray -> Int8Array` re-copy the [ByteArray] overload pays. Lets a wasm caller that
+     * produces bytes straight into a typed array (e.g. a blob store draining a `kotlinx.io`
+     * buffer) avoid the intermediate `ByteArray`. Not on the common `expect` — `Int8Array` is
+     * a wasm/js type that can't appear in the commonized facade surface.
+     */
+    public suspend fun put(
+        key: String,
+        value: Int8Array,
+    ): Unit = awaitRequest(store("readwrite").put(value, key.toJsString()))
 
     public actual suspend fun delete(key: String): Unit = awaitRequest(store("readwrite").delete(key.toJsString()))
 
