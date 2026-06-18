@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalWasmJsInterop::class)
+@file:Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "UNCHECKED_CAST")
 
 package com.github.lamba92.indexeddb
 
@@ -8,6 +9,8 @@ import org.khronos.webgl.get
 import org.khronos.webgl.set
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
+private external val indexedDB: IDBFactory
 
 internal external interface IDBRequest : JsAny {
     var onsuccess: ((JsAny) -> Unit)?
@@ -19,6 +22,18 @@ internal external interface IDBOpenDBRequest : IDBRequest {
     var onupgradeneeded: ((JsAny) -> Unit)?
 }
 
+// `IDBRequest.result` is `any` in the DOM. [IDBValueRequest] types it generically for the object
+// results (get / getAllKeys); `count`'s result is a primitive `Int`, not a `JsAny`, so it can't ride
+// the `T : JsAny` generic and keeps its own [IDBCountRequest]. The call site reads `result` through
+// these external surfaces (an unchecked downcast) rather than a hand-written `js()`.
+internal external interface IDBValueRequest<out T : JsAny> : IDBRequest {
+    val result: T?
+}
+
+internal external interface IDBCountRequest : IDBRequest {
+    val result: Int
+}
+
 internal external interface IDBFactory : JsAny {
     fun open(
         name: String,
@@ -27,6 +42,8 @@ internal external interface IDBFactory : JsAny {
 }
 
 internal external interface IDBDatabaseHandle : JsAny {
+    val objectStoreNames: DOMStringList
+
     fun createObjectStore(name: String): JsAny
 
     fun transaction(
@@ -35,6 +52,10 @@ internal external interface IDBDatabaseHandle : JsAny {
     ): IDBTransaction
 
     fun close()
+}
+
+internal external interface DOMStringList : JsAny {
+    fun contains(string: String): Boolean
 }
 
 internal external interface IDBTransaction : JsAny {
@@ -53,37 +74,22 @@ internal external interface IDBObjectStore : JsAny {
 
     fun clear(): IDBRequest
 
-    fun getAllKeys(): IDBRequest
+    fun getAllKeys(): IDBValueRequest<JsArray<JsString>>
 
-    fun count(): IDBRequest
+    fun count(): IDBCountRequest
 }
-
-private fun idbFactory(): IDBFactory = js("indexedDB")
-
-private fun hasStore(
-    db: IDBDatabaseHandle,
-    name: String,
-): Boolean = js("db.objectStoreNames.contains(name)")
-
-private fun int8Result(req: IDBRequest): Int8Array? = js("req.result")
-
-private fun stringResult(req: IDBRequest): JsString? = js("req.result")
-
-private fun keysResult(req: IDBRequest): JsArray<JsString> = js("req.result")
-
-private fun intResult(req: IDBRequest): Int = js("req.result")
 
 public actual suspend fun openIdb(
     name: String,
     version: Int,
     stores: Set<String>,
 ): IdbDatabase {
-    val request = idbFactory().open(name, version)
+    val request = indexedDB.open(name, version)
     val handle =
         suspendCancellableCoroutine { continuation ->
             request.onupgradeneeded = {
                 val db = request.result
-                stores.forEach { if (!hasStore(db, it)) db.createObjectStore(it) }
+                stores.forEach { if (!db.objectStoreNames.contains(it)) db.createObjectStore(it) }
             }
             request.onsuccess = { continuation.resume(request.result) }
             request.onerror = {
@@ -112,7 +118,7 @@ public actual class IdbByteStore internal constructor(
     public actual suspend fun get(key: String): ByteArray? {
         val request = store("readonly").get(key.toJsString())
         awaitRequest(request)
-        return int8Result(request)?.toByteArray()
+        return (request as IDBValueRequest<Int8Array>).result?.toByteArray()
     }
 
     public actual suspend fun put(
@@ -139,19 +145,20 @@ public actual class IdbByteStore internal constructor(
     public actual suspend fun keys(): List<String> {
         val request = store("readonly").getAllKeys()
         awaitRequest(request)
-        return keysResult(request).toList().map { it.toString() }
+        val keys = request.result ?: return emptyList()
+        return keys.toList().map { it.toString() }
     }
 
     public actual suspend fun count(): Long {
         val request = store("readonly").count()
         awaitRequest(request)
-        return intResult(request).toLong()
+        return request.result.toLong()
     }
 
     public actual suspend fun size(key: String): Long? {
         val request = store("readonly").get(key.toJsString())
         awaitRequest(request)
-        return int8Result(request)?.length?.toLong()
+        return (request as IDBValueRequest<Int8Array>).result?.length?.toLong()
     }
 }
 
@@ -164,7 +171,7 @@ public actual class IdbTextStore internal constructor(
     public actual suspend fun get(key: String): String? {
         val request = store("readonly").get(key.toJsString())
         awaitRequest(request)
-        return stringResult(request)?.toString()
+        return (request as IDBValueRequest<JsString>).result?.toString()
     }
 
     public actual suspend fun put(
@@ -179,13 +186,14 @@ public actual class IdbTextStore internal constructor(
     public actual suspend fun keys(): List<String> {
         val request = store("readonly").getAllKeys()
         awaitRequest(request)
-        return keysResult(request).toList().map { it.toString() }
+        val keys = request.result ?: return emptyList()
+        return keys.toList().map { it.toString() }
     }
 
     public actual suspend fun count(): Long {
         val request = store("readonly").count()
         awaitRequest(request)
-        return intResult(request).toLong()
+        return request.result.toLong()
     }
 
     public actual suspend fun entries(): List<Pair<String, String>> = keys().mapNotNull { key -> get(key)?.let { key to it } }
