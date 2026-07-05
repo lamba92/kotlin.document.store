@@ -25,7 +25,9 @@ public abstract class AbstractDataStore : DataStore {
      * Each mutex lock is identified by a unique string name. If a mutex lock for a given name does not
      * exist, it is created automatically when accessed using the `getMutex` method.
      */
-    public class MutexLockedScope(private val mutexMap: MutableMap<String, Mutex>) {
+    public class MutexLockedScope(
+        private val mutexMap: MutableMap<String, Mutex>,
+    ) {
         /**
          * Retrieves a mutex lock associated with the given name. If no mutex exists for the
          * specified name, a new one is created and stored in the map.

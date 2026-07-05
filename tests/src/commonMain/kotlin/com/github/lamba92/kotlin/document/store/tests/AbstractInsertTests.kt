@@ -20,7 +20,9 @@ import kotlin.test.assertEquals
  * This class is intended to be extended to define specific implementations of `DataStoreProvider`
  * for different Kotlin platforms.
  */
-public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractInsertTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME_1: String = "inserts_and_retrieves_a_document_without_index"
         public const val TEST_NAME_2: String = "inserts_and_retrieves_a_document_with_index"
@@ -65,7 +67,8 @@ public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(s
 
             assertEquals(
                 expected =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("name")
                         .getValue(JsonPrimitive(expected.name)),
@@ -83,10 +86,11 @@ public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(s
             val expected = collection.insert(TestUser.Mario)
 
             val actual =
-                collection.find(
-                    selector = "addresses.$0",
-                    value = expected.addresses[0],
-                ).first()
+                collection
+                    .find(
+                        selector = "addresses.$0",
+                        value = expected.addresses[0],
+                    ).first()
 
             assertEquals(
                 expected = expected,
@@ -96,7 +100,8 @@ public abstract class AbstractInsertTests(store: DataStoreProvider) : BaseTest(s
 
             assertEquals(
                 expected =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("addresses.$0")
                         .getValue(collection.json.encodeToJsonElement(expected.addresses[0])),

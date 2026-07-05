@@ -23,7 +23,9 @@ import kotlin.time.Duration.Companion.seconds
  *
  * This class is intended to be extended for platform-specific implementations of `DataStoreProvider`.
  */
-public abstract class AbstractObjectCollectionTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractObjectCollectionTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME_1: String = "gets_all_collection_names"
         public const val TEST_NAME_2: String = "fails_if_collection_type_is_not_serializable"

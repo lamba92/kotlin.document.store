@@ -21,7 +21,9 @@ import kotlin.test.assertEquals
  * This class is intended to be extended to define specific implementations of `DataStoreProvider`
  * based on the Kotlin platform being used.
  */
-public abstract class AbstractFindTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractFindTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME_1: String = "finds_a_document_using_index"
         public const val TEST_NAME_2: String = "finds_a_document_using_complex_index"

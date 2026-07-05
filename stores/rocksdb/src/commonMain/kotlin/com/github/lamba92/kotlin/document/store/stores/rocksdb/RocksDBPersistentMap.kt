@@ -57,7 +57,8 @@ public class RocksDBPersistentMap(
                 val prefixed = key.prefixed()
                 val previous = delegate.getString(prefixed)
                 delegate.delete(prefixed.encodeToByteArray())
-                delegate.getString("sizes.$prefix")
+                delegate
+                    .getString("sizes.$prefix")
                     ?.toLong()
                     ?.let { delegate.putString("sizes.$prefix", (it - 1).toString()) }
                 previous
@@ -83,8 +84,7 @@ public class RocksDBPersistentMap(
                     k.decodeToString().removePrefix("$prefix."),
                     v.decodeToString(),
                 )
-            }
-            .asFlow()
+            }.asFlow()
             .onCompletion { scan.close() }
     }
 

@@ -17,7 +17,9 @@ import kotlin.test.assertEquals
  * This class is designed to be extended for specific implementations of `DataStoreProvider`
  * depending on the targeted Kotlin platform.
  */
-public abstract class AbstractDocumentDatabaseTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractDocumentDatabaseTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME: String = "gets_all_collection_names"
     }

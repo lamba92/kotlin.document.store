@@ -13,7 +13,8 @@ val replaceVersion by tasks.registering {
     inputs.file(input)
     outputs.file(output)
     doLast {
-        output.get()
+        output
+            .get()
             .asPath
             .apply { parent.createDirectories() }
             .writeText(

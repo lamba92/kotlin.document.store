@@ -22,7 +22,9 @@ import kotlin.test.assertEquals
  * This class is intended to be extended to define specific implementations of `DataStoreProvider`
  * based on the Kotlin platform being used.
  */
-public abstract class AbstractDeleteTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractDeleteTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME_1: String = "deletes_collection"
         public const val TEST_NAME_2: String = "deleting_a_collection_actually_clears_it"
@@ -89,7 +91,8 @@ public abstract class AbstractDeleteTests(store: DataStoreProvider) : BaseTest(s
                 actual =
                     collection
                         .details()
-                        .indexes.getValue("name")
+                        .indexes
+                        .getValue("name")
                         .getValue(JsonPrimitive(TestUser.Mario.name)),
                 message = "Index should be empty",
             )
@@ -129,7 +132,8 @@ public abstract class AbstractDeleteTests(store: DataStoreProvider) : BaseTest(s
             assertEquals(
                 expected = emptySet(),
                 actual =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("name")
                         .getValue(JsonPrimitive(TestUser.Mario.name)),
@@ -171,7 +175,8 @@ public abstract class AbstractDeleteTests(store: DataStoreProvider) : BaseTest(s
             assertEquals(
                 expected = emptySet(),
                 actual =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("addresses.$0")
                         .getValue(collection.json.encodeToJsonElement(TestUser.Mario.addresses.first())),

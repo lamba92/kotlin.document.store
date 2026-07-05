@@ -19,7 +19,9 @@ import kotlin.test.assertTrue
  *
  * This class is intended to be extended to implement platform-specific `DataStoreProvider` behaviors.
  */
-public abstract class AbstractUpdateTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractUpdateTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public const val TEST_NAME_1: String = "updates_a_document_without_index"
         public const val TEST_NAME_2: String = "updates_a_document_with_index"
@@ -63,7 +65,8 @@ public abstract class AbstractUpdateTests(store: DataStoreProvider) : BaseTest(s
 
             assertEquals(
                 expected =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("name")
                         .getValue(JsonPrimitive(antonio.name)),
@@ -119,7 +122,8 @@ public abstract class AbstractUpdateTests(store: DataStoreProvider) : BaseTest(s
 
             assertEquals(
                 expected =
-                    collection.details()
+                    collection
+                        .details()
                         .indexes
                         .getValue("name")
                         .getValue(JsonPrimitive(marioWithId.name)),

@@ -40,7 +40,8 @@ public class ObjectCollection<T : Any>(
         value: K,
         valueSerializer: KSerializer<K>,
     ): Flow<T> =
-        jsonCollection.find(selector, json.encodeToJsonElement(valueSerializer, value))
+        jsonCollection
+            .find(selector, json.encodeToJsonElement(valueSerializer, value))
             .map { json.decodeFromJsonElement(serializer, it) }
 
     /**
@@ -91,7 +92,8 @@ public class ObjectCollection<T : Any>(
      *         with the specified ID was found.
      */
     public suspend fun removeById(id: Long): T? =
-        jsonCollection.removeById(id)
+        jsonCollection
+            .removeById(id)
             ?.let { json.decodeFromJsonElement(serializer, it) }
 
     /**
@@ -108,7 +110,8 @@ public class ObjectCollection<T : Any>(
      * @return The decoded [JsonObject] if found, or `null` if no entry exists with the given `id`.
      */
     public suspend fun findById(id: Long): T? =
-        jsonCollection.findById(id)
+        jsonCollection
+            .findById(id)
             ?.let { json.decodeFromJsonElement(serializer, it) }
 
     /**
@@ -116,7 +119,8 @@ public class ObjectCollection<T : Any>(
      * @return A [Flow]<[T]> of all entries in the collection.
      */
     public fun iterateAll(): Flow<T> =
-        jsonCollection.iterateAll()
+        jsonCollection
+            .iterateAll()
             .map { json.decodeFromJsonElement(serializer, it) }
 
     /**

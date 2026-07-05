@@ -15,7 +15,8 @@ internal fun RocksDB.scanPrefix(prefix: String): PrefixScan = PrefixScan(newIter
 internal class PrefixScan(
     private val source: RocksIterator,
     private val prefix: ByteArray,
-) : Sequence<Pair<ByteArray, ByteArray>>, AutoCloseable {
+) : Sequence<Pair<ByteArray, ByteArray>>,
+    AutoCloseable {
     init {
         source.seek(prefix)
     }

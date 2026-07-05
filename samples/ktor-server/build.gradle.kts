@@ -25,7 +25,11 @@ dependencies {
 
 tasks {
     named<JavaExec>("run") {
-        val dbPath = layout.buildDirectory.dir("db").get().asPath
+        val dbPath =
+            layout.buildDirectory
+                .dir("db")
+                .get()
+                .asPath
         environment("DB_PATH", dbPath.absolutePathString())
         doFirst {
             dbPath.createDirectories()

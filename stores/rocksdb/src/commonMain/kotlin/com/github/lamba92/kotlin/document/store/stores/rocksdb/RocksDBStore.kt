@@ -24,7 +24,9 @@ import maryk.rocksdb.openRocksDB
  * It is particularly suited for use cases that require fast sequential reads/writes
  * and efficient use of disk storage.
  */
-public class RocksDBStore(private val delegate: RocksDB) : AbstractDataStore() {
+public class RocksDBStore(
+    private val delegate: RocksDB,
+) : AbstractDataStore() {
     public companion object {
         /**
          * Opens a new [RocksDBStore] instance at the specified path.

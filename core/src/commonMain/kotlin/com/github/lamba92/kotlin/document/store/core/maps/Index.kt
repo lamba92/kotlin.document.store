@@ -55,7 +55,8 @@ public class Index(
         key: JsonElement,
         value: Set<Long>,
     ): Set<Long>? =
-        delegate.put(key.asString(), value.join())
+        delegate
+            .put(key.asString(), value.join())
             ?.split()
 
     override suspend fun remove(key: JsonElement): Set<Long>? = delegate.remove(key.asString())?.split()
@@ -69,7 +70,8 @@ public class Index(
     override suspend fun isEmpty(): Boolean = delegate.isEmpty()
 
     override fun entries(): Flow<Map.Entry<JsonElement, Set<Long>>> =
-        delegate.entries()
+        delegate
+            .entries()
             .map { SerializableEntry(json.decodeFromString(it.key), it.value.split()) }
 
     override fun close() {
@@ -80,19 +82,21 @@ public class Index(
         key: JsonElement,
         defaultValue: () -> Set<Long>,
     ): Set<Long> =
-        delegate.getOrPut(
-            key = key.asString(),
-            defaultValue = { defaultValue().join() },
-        ).split()
+        delegate
+            .getOrPut(
+                key = key.asString(),
+                defaultValue = { defaultValue().join() },
+            ).split()
 
     override suspend fun update(
         key: JsonElement,
         value: Set<Long>,
         updater: (Set<Long>) -> Set<Long>,
     ): UpdateResult<Set<Long>> =
-        delegate.update(
-            key = key.asString(),
-            value = value.join(),
-            updater = { updater(it.split()).join() },
-        ).let { UpdateResult(it.oldValue?.split(), it.newValue.split()) }
+        delegate
+            .update(
+                key = key.asString(),
+                value = value.join(),
+                updater = { updater(it.split()).join() },
+            ).let { UpdateResult(it.oldValue?.split(), it.newValue.split()) }
 }

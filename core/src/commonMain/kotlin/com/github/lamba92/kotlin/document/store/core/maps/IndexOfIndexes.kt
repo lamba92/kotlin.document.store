@@ -32,7 +32,9 @@ private fun List<String>.join() = Json.encodeToString(this)
  *
  * @property delegate The underlying `PersistentMap` instance used for storage and retrieval operations.
  */
-public class IndexOfIndexes(private val delegate: PersistentMap<String, String>) : PersistentMap<String, List<String>> {
+public class IndexOfIndexes(
+    private val delegate: PersistentMap<String, String>,
+) : PersistentMap<String, List<String>> {
     override suspend fun clear(): Unit = delegate.clear()
 
     override suspend fun size(): Long = delegate.size()
@@ -59,22 +61,25 @@ public class IndexOfIndexes(private val delegate: PersistentMap<String, String>)
         value: List<String>,
         updater: (List<String>) -> List<String>,
     ): UpdateResult<List<String>> =
-        delegate.update(
-            key = key,
-            value = value.join(),
-            updater = { updater(it.split()).join() },
-        ).let { UpdateResult(it.oldValue?.split(), it.newValue.split()) }
+        delegate
+            .update(
+                key = key,
+                value = value.join(),
+                updater = { updater(it.split()).join() },
+            ).let { UpdateResult(it.oldValue?.split(), it.newValue.split()) }
 
     override suspend fun getOrPut(
         key: String,
         defaultValue: () -> List<String>,
     ): List<String> =
-        delegate.getOrPut(
-            key = key,
-            defaultValue = { defaultValue().join() },
-        ).split()
+        delegate
+            .getOrPut(
+                key = key,
+                defaultValue = { defaultValue().join() },
+            ).split()
 
     override fun entries(): Flow<Map.Entry<String, List<String>>> =
-        delegate.entries()
+        delegate
+            .entries()
             .map { SerializableEntry(it.key, it.value.split()) }
 }

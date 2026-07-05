@@ -19,7 +19,9 @@ import kotlin.io.path.createParentDirectories
  * The `MVDataStore` class supports creation, retrieval, and deletion of named persistent maps
  * and leverages coroutines for suspendable operations to maintain thread safety.
  */
-public class MVDataStore(private val delegate: MVStore) : DataStore {
+public class MVDataStore(
+    private val delegate: MVStore,
+) : DataStore {
     public companion object {
         /**
          * Opens an `MVDataStore` at the specified string path. Intermediary directories

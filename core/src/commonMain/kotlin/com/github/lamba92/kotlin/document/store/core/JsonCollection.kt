@@ -146,15 +146,14 @@ public class JsonCollection internal constructor(
                     val id = it.id ?: return@mapNotNull null
                     val selectResult = it.select(query) ?: return@mapNotNull null
                     selectResult to id
-                }
-                .chunked(100)
+                }.chunked(100)
                 .map {
-                    it.groupBy(
-                        keySelector = { it.first },
-                        valueTransform = { it.second },
-                    ).mapValues { it.value.toSet() }
-                }
-                .flatMapConcat { it.entries.asFlow() }
+                    it
+                        .groupBy(
+                            keySelector = { it.first },
+                            valueTransform = { it.second },
+                        ).mapValues { it.value.toSet() }
+                }.flatMapConcat { it.entries.asFlow() }
                 .collect { (fieldValue, ids) ->
                     index.update(fieldValue, ids) { it + ids }
                 }
@@ -236,7 +235,8 @@ public class JsonCollection internal constructor(
         val jsonString = persistentCollection.remove(id) ?: return null
         val jsonObject = json.parseToJsonElement(jsonString).jsonObject
 
-        indexMap.get(name)
+        indexMap
+            .get(name)
             ?.asSequence()
             ?.forEach { fieldSelector ->
                 getIndexOrNull(fieldSelector)
@@ -282,7 +282,8 @@ public class JsonCollection internal constructor(
         val jsonString = json.encodeToString(jsonObjectWithId)
 
         persistentCollection.put(id, jsonString)
-        indexMap.get(name)
+        indexMap
+            .get(name)
             ?.forEach { fieldSelector ->
                 getIndexOrNull(fieldSelector)
                     ?.update(
@@ -351,13 +352,14 @@ public class JsonCollection internal constructor(
         CollectionDetails(
             idGeneratorState = genIdMap.get(name) ?: 0L,
             indexes =
-                indexMap.get(name)?.mapNotNull { selector ->
-                    getIndex(selector)
-                        ?.entries
-                        ?.toMap()
-                        ?.let { selector to it }
-                }
-                    ?.toMap()
+                indexMap
+                    .get(name)
+                    ?.mapNotNull { selector ->
+                        getIndex(selector)
+                            ?.entries
+                            ?.toMap()
+                            ?.let { selector to it }
+                    }?.toMap()
                     ?: emptyMap(),
         )
 

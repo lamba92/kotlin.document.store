@@ -30,7 +30,9 @@ public fun PersistentMap<String, String>.asIdGenerator(): IdGenerator = IdGenera
  * @param delegate The underlying `PersistentMap` that performs the actual
  * storage operations. This map stores values as `String`.
  */
-public class IdGenerator(private val delegate: PersistentMap<String, String>) : PersistentMap<String, Long> {
+public class IdGenerator(
+    private val delegate: PersistentMap<String, String>,
+) : PersistentMap<String, Long> {
     override suspend fun clear(): Unit = delegate.clear()
 
     override suspend fun size(): Long = delegate.size()
@@ -57,22 +59,25 @@ public class IdGenerator(private val delegate: PersistentMap<String, String>) : 
         value: Long,
         updater: (Long) -> Long,
     ): UpdateResult<Long> =
-        delegate.update(
-            key = key,
-            value = value.toString(),
-            updater = { updater(it.toLong()).toString() },
-        ).let { UpdateResult(it.oldValue?.toLong(), it.newValue.toLong()) }
+        delegate
+            .update(
+                key = key,
+                value = value.toString(),
+                updater = { updater(it.toLong()).toString() },
+            ).let { UpdateResult(it.oldValue?.toLong(), it.newValue.toLong()) }
 
     override suspend fun getOrPut(
         key: String,
         defaultValue: () -> Long,
     ): Long =
-        delegate.getOrPut(
-            key = key,
-            defaultValue = { defaultValue().toString() },
-        ).toLong()
+        delegate
+            .getOrPut(
+                key = key,
+                defaultValue = { defaultValue().toString() },
+            ).toLong()
 
     override fun entries(): Flow<Map.Entry<String, Long>> =
-        delegate.entries()
+        delegate
+            .entries()
             .map { SerializableEntry(it.key, it.value.toLong()) }
 }

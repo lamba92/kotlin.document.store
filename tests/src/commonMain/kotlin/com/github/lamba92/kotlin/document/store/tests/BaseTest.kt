@@ -22,7 +22,9 @@ import kotlin.time.Duration.Companion.minutes
  * @constructor Initializes the `BaseTest` with the specified `DataStoreProvider`.
  * @param storeProvider A provider to manage data store instances for testing.
  */
-public abstract class BaseTest(private val storeProvider: DataStoreProvider) {
+public abstract class BaseTest(
+    private val storeProvider: DataStoreProvider,
+) {
     /**
      * Runs a database-related coroutine-based test. It wraps [runTest] and provides a [KotlinDocumentStore]
      * instance to the test body. The provided database will be cleaned up before the test starts.

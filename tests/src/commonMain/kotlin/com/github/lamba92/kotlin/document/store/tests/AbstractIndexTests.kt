@@ -23,7 +23,9 @@ import kotlin.test.assertTrue
  *
  * This class is intended to be extended to implement platform-specific behaviors for `DataStoreProvider`.
  */
-public abstract class AbstractIndexTests(store: DataStoreProvider) : BaseTest(store) {
+public abstract class AbstractIndexTests(
+    store: DataStoreProvider,
+) : BaseTest(store) {
     public companion object {
         public val json: Json =
             Json {
@@ -45,7 +47,8 @@ public abstract class AbstractIndexTests(store: DataStoreProvider) : BaseTest(st
             collection.insert(TestUser.Mario)
 
             val marioId =
-                collection.jsonCollection.iterateAll()
+                collection.jsonCollection
+                    .iterateAll()
                     .first { it["name"]?.jsonPrimitive?.content == TestUser.Mario.name }["_id"]
                     ?.jsonPrimitive
                     ?.long
@@ -54,7 +57,8 @@ public abstract class AbstractIndexTests(store: DataStoreProvider) : BaseTest(st
             collection.insert(TestUser.Luigi)
 
             val luigiId =
-                collection.jsonCollection.iterateAll()
+                collection.jsonCollection
+                    .iterateAll()
                     .first { it["name"]?.jsonPrimitive?.content == TestUser.Luigi.name }["_id"]
                     ?.jsonPrimitive
                     ?.long

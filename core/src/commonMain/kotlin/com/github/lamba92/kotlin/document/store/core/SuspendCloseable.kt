@@ -51,10 +51,9 @@ public fun interface SuspendCloseable {
  *
  * @throws Exception if an exception occurs during resource usage or closing.
  */
-public suspend fun <T, R : SuspendCloseable> R.use(block: suspend (R) -> T): T {
-    return try {
+public suspend fun <T, R : SuspendCloseable> R.use(block: suspend (R) -> T): T =
+    try {
         block(this)
     } finally {
         close()
     }
-}

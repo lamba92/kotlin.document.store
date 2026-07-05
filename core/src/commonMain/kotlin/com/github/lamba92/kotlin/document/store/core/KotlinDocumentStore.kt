@@ -99,7 +99,8 @@ public class KotlinDocumentStore internal constructor(
      * @return A [Flow] that emits the names of all collections as strings.
      */
     public suspend fun getAllCollectionNames(): Flow<String> =
-        store.getMap(COLLECTIONS)
+        store
+            .getMap(COLLECTIONS)
             .entries()
             .map { it.key }
 
@@ -113,7 +114,8 @@ public class KotlinDocumentStore internal constructor(
      * are [CollectionDetails] objects containing metadata for each collection.
      */
     public suspend fun databaseDetails(): Map<String, CollectionDetails> =
-        store.getMap(COLLECTIONS)
+        store
+            .getMap(COLLECTIONS)
             .entries()
             .map { it.key to getJsonCollection(it.key).details() }
             .toList()

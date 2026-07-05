@@ -24,7 +24,9 @@ public fun PersistentMap<String, String>.asCollectionMap(): PersistentCollection
  * @constructor Creates a PersistentCollection instance with a specified PersistentMap<String, String>.
  * @param delegate The underlying PersistentMap<String, String> used to perform operations.
  */
-public class PersistentCollection(private val delegate: PersistentMap<String, String>) : PersistentMap<Long, String> {
+public class PersistentCollection(
+    private val delegate: PersistentMap<String, String>,
+) : PersistentMap<Long, String> {
     override suspend fun clear(): Unit = delegate.clear()
 
     override suspend fun size(): Long = delegate.size()
@@ -67,6 +69,7 @@ public class PersistentCollection(private val delegate: PersistentMap<String, St
         )
 
     override fun entries(): Flow<Map.Entry<Long, String>> =
-        delegate.entries()
+        delegate
+            .entries()
             .map { SerializableEntry(it.key.toLong(), it.value) }
 }

@@ -70,7 +70,8 @@ fun Path.delete() = SystemFileSystem.delete(this, false)
 
 fun Path.deleteRecursively() {
     if (isDirectory) {
-        SystemFileSystem.list(this@deleteRecursively)
+        SystemFileSystem
+            .list(this@deleteRecursively)
             .forEach {
                 when {
                     it.isFile -> it.delete()

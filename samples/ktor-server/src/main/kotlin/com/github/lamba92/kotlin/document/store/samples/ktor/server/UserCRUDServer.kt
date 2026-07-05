@@ -48,7 +48,8 @@ fun Application.UserCRUDServer(userCollection: ObjectCollection<User>) {
                 val totalPages = (totalElements + pageSize - 1) / pageSize
 
                 val users =
-                    userCollection.iterateAll()
+                    userCollection
+                        .iterateAll()
                         .drop(page * pageSize)
                         .take(pageSize)
                         .toList()
@@ -94,7 +95,8 @@ fun Application.UserCRUDServer(userCollection: ObjectCollection<User>) {
             }
             get("insertTestUsers") {
                 val users =
-                    Thread.currentThread()
+                    Thread
+                        .currentThread()
                         .contextClassLoader
                         .getResourceAsStream("testUsers.json")
                         ?.let { Json.decodeFromStream<List<User>>(it) }
