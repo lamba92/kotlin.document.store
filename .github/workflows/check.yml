@@ -18,7 +18,7 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew assembleDebug
+      - run: ./gradlew assembleAndroidDeviceTest
       - name: Enable KVM
         # enable KVM for faster emulator
         run: |

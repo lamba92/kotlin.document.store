@@ -17,6 +17,7 @@ ktor = "3.4.2"
 logback = "1.5.32"
 rocksdb-multiplatform = "10.10.1"
 androidx-test-runner = "1.6.2"
+desugar-jdk-libs = "2.1.5"
 
 [libraries]
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
@@ -46,6 +47,7 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 rocksdb-multiplatform = { module = "io.maryk.rocksdb:rocksdb-multiplatform", version.ref = "rocksdb-multiplatform" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }

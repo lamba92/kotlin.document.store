@@ -10,5 +10,5 @@ val githubRef =
 version =
     when {
         githubRef != null -> githubRef
-        else -> "1.0-SNAPSHOT"
+        else -> "2.0-SNAPSHOT"
     }

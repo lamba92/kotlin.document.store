@@ -7,11 +7,16 @@ plugins {
 kotlin {
     android {
         namespace = "com.github.lamba92.kotlin.document.store.stores.rocksdb"
+        enableCoreLibraryDesugaring = true
     }
 
     jvm()
 
-    mingwX64()
+    mingwX64 {
+        binaries.all {
+            linkerOpts("-lrpcrt4")
+        }
+    }
 
     linuxX64()
     linuxArm64()
@@ -102,5 +107,17 @@ kotlin {
         jvmTest {
             dependsOn(commonJvmTest)
         }
+
+        androidDeviceTest {
+            dependencies {
+                implementation(libs.androidx.test.runner)
+                implementation(libs.androidx.test.core)
+                implementation(libs.android.test.junit)
+            }
+        }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
