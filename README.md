@@ -7,7 +7,7 @@ With support for typed and schemaless data, lets you work with JSON objects easi
 Originally created for [JetBrains/package-search-intellij-plugin](https://github.com/JetBrains/package-search-intellij-plugin) for a fast and reliable offline cache, evolved for all KMP developers 🚀
 
 Some key highlights:
-- **Multiplatform**: Works on Kotlin/JVM, Kotlin/JS, and ALL Kotlin/Native platforms (excepts wasm).
+- **Multiplatform**: Works on Kotlin/JVM, Kotlin/JS, Kotlin/Wasm (wasmJs + wasmWasi), and ALL Kotlin/Native platforms.
 - **Typed and Schemaless Storage**: Use strongly-typed data models using [kotlin.serialization](https://github.com/kotlin/kotlin.serialization) or raw JSON depending on your needs.
 - **Simple APIs**: Built with a developer-friendly, coroutine-based API.
 - **Indexing Support**: Create and manage indexes for efficient querying of data.
@@ -50,13 +50,13 @@ There are three main implementations of the `DataStore` interface:
     - macOs: arm64, x64
   - Native (Linux, macOS, Windows, iOS [arm64 + simulator-arm64], Android, Android native, watchOS, tvOS)
 - **Browser**: For browser-based applications, using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) storage.
-  - JS
+  - JS, wasmJs
 - **MVStore**: For JVM-based applications, using the [H2 Database Engine](https://www.h2database.com/html/main.html) MVStore. Recommended only for IntelliJ Plugin development.
   - JVM
 
 facebook/rocksdb is licensed under the [Apache 2.0 / GPLv2 dual license](https://github.com/facebook/rocksdb/blob/main/LICENSE.Apache), all rights reserved to the original authors.
 
-The modules `core` and `test` are common to all platforms and contain the main interfaces and tests for the library and they support also `wasmWasi`.
+The modules `core` and `test` are common to all platforms and contain the main interfaces and tests for the library and they support also `wasmJs` and `wasmWasi`.
 
 # Quickstart
 
@@ -68,7 +68,7 @@ Import the library to your project, see the latest version in the [Releases](htt
 #### Gradle Setup
 ```kotlin
 dependencies {
-    implementation("com.github.lamba92:kotlin-document-store-rocksdb:{latest_version}")
+    implementation("io.github.lamba92:kotlin-document-store-rocksdb:{latest_version}")
 }
 ```
 #### Using Version Catalog
@@ -81,7 +81,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("kotlinDocumentStore") {
-            from("com.github.lamba92:kotlin-document-store-version-catalog:{latest_version}")
+            from("io.github.lamba92:kotlin-document-store-version-catalog:{latest_version}")
         }
     }
 }
@@ -124,7 +124,7 @@ Import the library to your project, see the latest version in the [Releases](htt
 #### Gradle Setup
 ```kotlin
 dependencies {
-    implementation("com.github.lamba92:kotlin-document-store-browser:{latest_version}")
+    implementation("io.github.lamba92:kotlin-document-store-browser:{latest_version}")
 }
 ```
 #### Using Version Catalog
@@ -137,7 +137,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("kotlinDocumentStore") {
-            from("com.github.lamba92:kotlin-document-store-version-catalog:{latest_version}")
+            from("io.github.lamba92:kotlin-document-store-version-catalog:{latest_version}")
         }
     }
 }
@@ -344,7 +344,7 @@ you can use the provided module `kotlin-document-store-test`:
 
 // Kotlin/JVM
 dependencies {
-    testImplementation("com.github.lamba92:kotlin-document-store-test:{latest_version}")
+    testImplementation("io.github.lamba92:kotlin-document-store-test:{latest_version}")
 }
 
 // Kotlin/JS or Kotlin/Multiplatform
@@ -352,7 +352,7 @@ kotlin {
     sourceSets {
         commonTest {
             dependencies {
-                implementation("com.github.lamba92:kotlin-document-store-test:{latest_version}")
+                implementation("io.github.lamba92:kotlin-document-store-test:{latest_version}")
             }
         }
     }
