@@ -1,4 +1,4 @@
-group = "com.github.lamba92"
+group = "io.github.lamba92"
 
 val githubRef =
     System.getenv("GITHUB_EVENT_NAME")

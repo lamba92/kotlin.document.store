@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.github.lamba92.kotlin.document.store.stores.rocksdb"
+        namespace = "io.github.lamba92.kotlin.document.store.stores.rocksdb"
         enableCoreLibraryDesugaring = true
     }
 

@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.github.lamba92.kotlin.document.store.core"
+        namespace = "io.github.lamba92.kotlin.document.store.core"
     }
 
     jvm()
