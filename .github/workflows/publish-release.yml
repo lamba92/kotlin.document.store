@@ -5,9 +5,9 @@ on:
     types: [ published ]
 
 jobs:
-  create-staging-repository:
-    runs-on: ubuntu-latest
-    name: "Create Sonatype Staging Repository"
+  publish:
+    runs-on: macos-latest
+    name: "Publish to Central Portal"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -16,49 +16,12 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew initializeSonatypeStagingRepository
+      # macOS is the one host that can build every KMP target (Apple natively, the rest via
+      # cross-compilation), so a single runner produces one complete Central Portal deployment.
+      - run: ./gradlew publishAggregationToCentralPortal --stacktrace
         env:
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_REPOSITORY_DESCRIPTION: ${{ github.event_name }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.ref_name }}
-
-  publish-artifacts:
-    needs: [ create-staging-repository ]
-    strategy:
-      matrix:
-        os: [ ubuntu, windows, macos ]
-    runs-on: ${{ matrix.os }}-latest
-    name: "Publish artifacts on ${{ matrix.os }}"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: adopt
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x gradlew
-      - run: ./gradlew findSonatypeStagingRepository -x initializeSonatypeStagingRepository publishToSonatype
-        env:
+          PUBLISH_ALL_PLATFORMS: "true"
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_REPOSITORY_DESCRIPTION: ${{ github.event_name }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.ref_name }}
-
-  close-staging-repository:
-    needs: [ publish-artifacts ]
-    runs-on: ubuntu-latest
-    name: "Close Sonatype Staging Repository"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: adopt
-          java-version: 21
-      - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x gradlew
-      - run: ./gradlew findSonatypeStagingRepository -x initializeSonatypeStagingRepository closeAndReleaseSonatypeStagingRepository
-        env:
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_REPOSITORY_DESCRIPTION: ${{ github.event_name }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.ref_name }}

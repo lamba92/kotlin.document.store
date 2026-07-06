@@ -3,6 +3,16 @@
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
     id("com.gradle.develocity") version "4.0.2"
+    id("com.gradleup.nmcp.settings") version "1.6.1"
+}
+
+nmcpSettings {
+    centralPortal {
+        username = System.getenv("SONATYPE_USERNAME") ?: ""
+        password = System.getenv("SONATYPE_PASSWORD") ?: ""
+        // Auto-release once the Central Portal validates the deployment.
+        publishingType = "AUTOMATIC"
+    }
 }
 
 dependencyResolutionManagement {

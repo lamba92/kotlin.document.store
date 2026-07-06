@@ -101,9 +101,11 @@ tasks {
         dependsOn(withType<Sign>())
     }
 
-    // in CI we only want to publish the artifacts for the current OS only
-    // but when developing we want to publish all the possible artifacts to test them
-    if (isCi) {
+    // In CI's per-OS check job each runner only publishes the artifacts it can build, so no
+    // single runner is asked to build another platform's target. The Central Portal publish job
+    // sets PUBLISH_ALL_PLATFORMS=true and runs on macOS — the one host that can build every
+    // target — so it must emit all publications into the single aggregated deployment.
+    if (isCi && System.getenv("PUBLISH_ALL_PLATFORMS") != "true") {
 
         val linuxNames = listOf("linux", "android", "jvm", "js", "kotlin", "metadata", "wasm")
         val windowsNames = listOf("mingw", "windows")

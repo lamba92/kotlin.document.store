@@ -6,12 +6,9 @@ on:
       - master
 
 jobs:
-  publish-artifacts:
-    strategy:
-      matrix:
-        os: [ ubuntu, windows, macos ]
-    runs-on: ${{ matrix.os }}-latest
-    name: "Publish artifacts on ${{ matrix.os }}"
+  publish:
+    runs-on: macos-latest
+    name: "Publish snapshot to Central Portal"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -20,8 +17,9 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew publishToSonatype
+      - run: ./gradlew publishAggregationToCentralSnapshots --stacktrace
         env:
+          PUBLISH_ALL_PLATFORMS: "true"
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_PRIVATE_KEY: ${{ secrets.SIGNING_PRIVATE_KEY }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

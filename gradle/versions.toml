@@ -1,7 +1,6 @@
 [versions]
 androidx-test-core = "1.6.1"
 android-test-junit = "1.2.1"
-nexus-publish-plugin = "2.0.0"
 android-gradle-plugin = "9.2.0"
 dokka = "2.0.0"
 h2 = "2.3.232"
@@ -22,7 +21,6 @@ desugar-jdk-libs = "2.1.5"
 [libraries]
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
 android-test-junit = { module = "androidx.test.ext:junit", version.ref = "android-test-junit" }
-nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus-publish-plugin" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 android-kotlin-multiplatform-library-plugin = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "android-gradle-plugin" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }

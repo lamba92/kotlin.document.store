@@ -10,5 +10,4 @@ dependencies {
     api(libs.dokka.gradle.plugin)
     api(libs.android.gradle.plugin)
     api(libs.android.kotlin.multiplatform.library.plugin)
-    api(libs.nexus.publish.plugin)
 }
